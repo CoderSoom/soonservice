@@ -80,7 +80,7 @@ class SongManager : SongService {
                         val imgSong: String = child.select("a").first().select("img").attr("src")
                         val nameSong: String = child.select("a").first().attr("title")
                         val singerSong: String = child.select("div.author").text()
-                        listNameSong.add(ItemMusicOnline(null, imgSong, nameSong, singerSong, linkSong, null, null, null))
+                        listNameSong.add(ItemMusicOnline(null, null, imgSong, nameSong, singerSong, linkSong, null, null, null))
                     } catch (e1: Exception) {
                         e1.printStackTrace()
                     }
@@ -151,6 +151,7 @@ class SongManager : SongService {
 
     }
 
+
     override fun albumsSongNews(): MutableList<ItemMusicOnline> {
         val listAlbumsNews: MutableList<ItemMusicOnline> = ArrayList()
         try {
@@ -162,7 +163,7 @@ class SongManager : SongService {
                 val imgAlbumsSong = child.select("div.card-header").attr("style").replace("background-image: url(", "").replace(");", "")
                 val nameAlbumsSong = child.select("h3.card-title").select("a").attr("title")
                 val nameAlbumsSingle = child.select("p.card-text").select("a").text()
-                listAlbumsNews.add(ItemMusicOnline(null, imgAlbumsSong, nameAlbumsSong, nameAlbumsSingle, linkAlbumsSong, null, null, null))
+                listAlbumsNews.add(ItemMusicOnline(null, null, imgAlbumsSong, nameAlbumsSong, nameAlbumsSingle, linkAlbumsSong, null, null, null))
             }
         } catch (e: IOException) {
         }
@@ -182,7 +183,7 @@ class SongManager : SongService {
                 val imgAlbumsSong = child.select("div.card-header").attr("style").replace("background-image: url(", "").replace(");", "")
                 val nameAlbumsSong = child.select("h3.card-title").select("a").attr("title")
                 val nameAlbumsSingle = child.select("p.card-text").select("a").text()
-                listAlbumsYear.add(ItemMusicOnline(null, imgAlbumsSong, nameAlbumsSong, nameAlbumsSingle, linkAlbumsSong, null, null, null))
+                listAlbumsYear.add(ItemMusicOnline(null, null, imgAlbumsSong, nameAlbumsSong, nameAlbumsSingle, linkAlbumsSong, null, null, null))
             }
         } catch (e: IOException) {
         }
@@ -200,7 +201,7 @@ class SongManager : SongService {
                 val imgAlbumsSong = child.select("div.card-header").attr("style").replace("background-image: url(", "").replace(");", "")
                 val nameAlbumsSong = child.select("h3.card-title").select("a").attr("title")
                 val nameAlbumsSingle = child.select("p.card-text").select("a").text()
-                listAlbumsVideos.add(ItemMusicOnline(null, imgAlbumsSong, nameAlbumsSong, nameAlbumsSingle, linkAlbumsSong, null, null, null))
+                listAlbumsVideos.add(ItemMusicOnline(null, null, imgAlbumsSong, nameAlbumsSong, nameAlbumsSingle, linkAlbumsSong, null, null, null))
             }
         } catch (e: IOException) {
         }
@@ -221,7 +222,7 @@ class SongManager : SongService {
                 val linkSong = "https://chiasenhac.vn" + child.select("a").attr("href")
                 val hourAgo = (child.select("div.media-right").select("i")[0].parentNode().childNodes()[1] as TextNode).text()
                 var views = child.select("div.media-right").select("small.time_stt")[1].text().replace("headset ", "")
-                listNewSong.add(ItemMusicOnline(null, imgSong, nameSong, singerSong, linkSong, qualitySong, hourAgo, views))
+                listNewSong.add(ItemMusicOnline(null, null, imgSong, nameSong, singerSong, linkSong, qualitySong, hourAgo, views))
             }
         } catch (e: IOException) {
         }
@@ -239,7 +240,7 @@ class SongManager : SongService {
                 val imgSong: String = child.select("a").first().select("img").attr("src")
                 val nameSong: String = child.select("a").first().attr("title")
                 val singerSong: String = child.select("div.author").text()
-                listWeekly.add(ItemMusicOnline(null, imgSong, nameSong, singerSong, linkSong, null, null, null))
+                listWeekly.add(ItemMusicOnline(null, null, imgSong, nameSong, singerSong, linkSong, null, null, null))
             }
         } catch (e: IOException) {
         }
@@ -247,7 +248,7 @@ class SongManager : SongService {
     }
 
 
-    override fun getInfo(link: String?): Any? {
+    override fun getInfo(link: String?):Any?{
         ////LOGIN CNS
         loginCNS(link)
 
@@ -303,7 +304,7 @@ class SongManager : SongService {
                 } else {
                     els[0].attr("href")
                 }
-                listInfoSong.add(ItemMusicInfo(linkMusic, imgSong, nameSong, singerSong, authorSong, albumSong, yearSong, lyricsSong ,lyricKaraoke,  listenSong, category))
+                listInfoSong.add(ItemMusicInfo(linkMusic, imgSong, nameSong, singerSong, authorSong, albumSong, yearSong, lyricsSong, lyricKaraoke, listenSong, category))
             }
         } catch (e: IOException) {
             e.printStackTrace()
@@ -322,11 +323,14 @@ class SongManager : SongService {
             val els: Elements = doc.select("div.d-table")
             val childEls: Elements = els.select("div.card-footer")
             for (child in childEls) {
-                val linkSongChild = "https://chiasenhac.vn" + child.select("a").first().attr("href")
+                var textID = child.select("a").first().text()
+                var findID = textID.indexOf(".")
+                var id = textID.substring(0, findID)
+                val linkSongChild = child.select("a").first().attr("href")
                 val imgSongChild: String = doc.select("div.row").select("img").attr("src")
                 val nameSongChil: String = child.select("a").first().attr("title")
                 val singerSongChild: String = child.select("div.author-ellepsis").text()
-                listAlbumsChil.add(ItemMusicOnline(null, imgSongChild, nameSongChil, singerSongChild, linkSongChild, null, null, null))
+                listAlbumsChil.add(ItemMusicOnline(id, null, imgSongChild, nameSongChil, singerSongChild, linkSongChild, null, null, null))
             }
         } catch (e: IOException) {
         }
@@ -355,7 +359,7 @@ class SongManager : SongService {
             var nameVideos = doc.select("ul.list-unstyled.mv_sing").select("h5.mt-0").text()
             var singerVideos = doc.select("ul.list-unstyled.mv_sing").select("div.author").text()
 
-            listMVSong.add(ItemMusicOnline(null, imgVideos, nameVideos, singerVideos, linkVideos, null, null, null))
+            listMVSong.add(ItemMusicOnline(null, null, imgVideos, nameVideos, singerVideos, linkVideos, null, null, null))
         } catch (e: IOException) {
         }
         return listMVSong
@@ -372,7 +376,7 @@ class SongManager : SongService {
                 val imgSongSinger = songSinger.select("div.card-header").eq(i).attr("style").replace("background-image: url(", "").replace(");", "")
                 val nameSongSinger = songSinger.select("h3.card-title").eq(i).select("a").attr("title")
                 val singerSongSinger = songSinger.select("p.card-text").eq(i).select("a").text()
-                listSongSinger.add(ItemMusicOnline(null, imgSongSinger, nameSongSinger, singerSongSinger, linkSongSinger, null, null, null))
+                listSongSinger.add(ItemMusicOnline(null, null, imgSongSinger, nameSongSinger, singerSongSinger, linkSongSinger, null, null, null))
             }
         } catch (e: IOException) {
         }
@@ -390,7 +394,7 @@ class SongManager : SongService {
                 val imgVideosSinger = songSinger.select("div.card-header").eq(i).attr("style").replace("background-image: url(", "").replace(");", "")
                 val nameVideoSinger = songSinger.select("h3.card-title").eq(i).select("a").attr("title")
                 val singerVideoSinger = songSinger.select("p.card-text").eq(i).select("a").text()
-                listVideoSinger.add(ItemMusicOnline(null, imgVideosSinger, nameVideoSinger, singerVideoSinger, linkVideoSinger, null, null, null))
+                listVideoSinger.add(ItemMusicOnline(null, null, imgVideosSinger, nameVideoSinger, singerVideoSinger, linkVideoSinger, null, null, null))
             }
         } catch (e: IOException) {
         }
@@ -413,7 +417,7 @@ class SongManager : SongService {
                     val singerSong: String = child.select("div.author").text()
                     val qualitySong = child.select("small.type_music").text()
                     var views = child.select("div.media-right").select("small.time_stt").text().replace("play_arrow ", "")
-                    listSuggestion.add(ItemMusicOnline(null, imgSong, nameSong, singerSong, linkSong, qualitySong, null, views))
+                    listSuggestion.add(ItemMusicOnline(null, null, imgSong, nameSong, singerSong, linkSong, qualitySong, null, views))
 
                 }
             }
@@ -449,7 +453,7 @@ class SongManager : SongService {
                     val nameSong: String = child.select("a").first().attr("title")
                     val singerSong: String = child.select("div.author").text()
                     var views = child.select("div.media-right").select("small.time_stt").text().replace("play_arrow ", "")
-                    listRankMusicContry.add(ItemMusicOnline(null, imgSong, nameSong, singerSong, linkSong, null, null, views))
+                    listRankMusicContry.add(ItemMusicOnline(null, null, imgSong, nameSong, singerSong, linkSong, null, null, views))
                 }
             }
         } catch (e: NullPointerException) {
@@ -481,7 +485,7 @@ class SongManager : SongService {
                     val nameVideo = child.select("a").first().attr("title")
                     val singerVideo = child.select("div.author").text()
                     var views = child.select("div.media-right").select("small.time_stt").text().replace("play_arrow ", "")
-                    listRankVideoContry.add(ItemMusicOnline(null, imgVideo, nameVideo, singerVideo, linkVideo, null, null, views))
+                    listRankVideoContry.add(ItemMusicOnline(null, null, imgVideo, nameVideo, singerVideo, linkVideo, null, null, views))
                 }
             }
         } catch (e: NullPointerException) {
