@@ -1,9 +1,6 @@
-package com.kotlin.viewmodel
+package com.kotlin.modelmanager
 
-import com.kotlin.model.ItemCategories
-import com.kotlin.model.ItemMusicInfo
-import com.kotlin.model.ItemMusicList
-import com.kotlin.model.ItemMusicOnline
+import com.kotlin.model.*
 import com.kotlin.service.SongService
 import org.jsoup.Connection
 import org.jsoup.Jsoup
@@ -76,11 +73,11 @@ class SongManager : SongService {
                 val childEls: Elements = e.select("li.media")
                 for (child in childEls) {
                     try {
-                        val linkSong: String = child.select("a").first().attr("href")
+                        val linkSong: String = "https://chiasenhac.vn" + child.select("a").first().attr("href")
                         val imgSong: String = child.select("a").first().select("img").attr("src")
                         val nameSong: String = child.select("a").first().attr("title")
                         val singerSong: String = child.select("div.author").text()
-                        listNameSong.add(ItemMusicOnline(null, null, imgSong, nameSong, singerSong, linkSong, null, null, null))
+                        listNameSong.add(ItemMusicOnline(imgSong = imgSong, nameSong = nameSong, singerSong = singerSong, linkSong = linkSong))
                     } catch (e1: Exception) {
                         e1.printStackTrace()
                     }
@@ -97,54 +94,71 @@ class SongManager : SongService {
 
     ///add Cateogories
 
-    override fun addCategories(): Any {
-        var result = mutableListOf<ItemMusicList<ItemCategories>>()
-        result.add(ItemMusicList("Categories Contry", categoriesContry()))
-        result.add(ItemMusicList("Categories Status", categoriesStatus()))
-        return result
-    }
 
-    override fun categoriesContry(): MutableList<ItemCategories> {
+    override fun categoriesCountry(): Any {
+        var result = mutableListOf<ItemMusicList<ItemCategories>>()
         val listCategory: MutableList<ItemCategories> = ArrayList()
         try {
             val doc: Document = Jsoup.connect("https://chiasenhac.vn").get()
             val category = doc.select("div.box_catalog").select("a")
             for (i in 0..7) {
                 val linkCategories = "https://chiasenhac.vn" + category.select("a")[i].attr("href")
-                val imgCategories = category.select("a")[i].attr("style").replace("background: url('", "").replace("')", "").replace("no-repeat;", "")
+                val imgCategories = category.select("a")[i].attr("style").replace("background: url('", "").replace("')", "").replace(" no-repeat;", "")
                 val nameCategories = category.select("span")[i].text()
                 listCategory.add(ItemCategories(linkCategories, imgCategories, nameCategories))
+                result.add(ItemMusicList("Bảng Xếp Hạng", listCategory))
             }
         } catch (e: IOException) {
         }
-        return listCategory
+        return result
     }
 
-    override fun categoriesStatus(): MutableList<ItemCategories> {
+    override fun categoriesStatus(): Any {
+        var result = mutableListOf<ItemMusicList<ItemCategories>>()
         val listCategory: MutableList<ItemCategories> = ArrayList()
         try {
             val doc: Document = Jsoup.connect("https://chiasenhac.vn").get()
             val category = doc.select("div.box_catalog").select("a")
             for (i in 8 until category.size) {
                 val linkCategories = "https://chiasenhac.vn" + category.select("a")[i].attr("href")
-                val imgCategories = "http://chiasenhac.vn" + category.select("a")[i].attr("style").replace("background: url('", "").replace("')", "").replace("no-repeat;", "")
+                val imgCategories = "https://chiasenhac.vn" + category.select("a")[i].attr("style").replace("background: url('", "").replace("')", "").replace(" no-repeat;", "")
                 val nameCategories = category.select("span")[i].text()
                 listCategory.add(ItemCategories(linkCategories, imgCategories, nameCategories))
+                result.add(ItemMusicList("Tâm Trạng & Hoạt Động", listCategory))
+
             }
         } catch (e: IOException) {
         }
-        return listCategory
+        return result
+    }
+
+    override fun getTopResults(): Any {
+        var result = mutableListOf<ItemMusicList<ItemMusicOnline>>()
+        val listTopResult: MutableList<ItemMusicOnline> = ArrayList()
+        try {
+            val doc: Document = Jsoup.connect("https://chiasenhac.vn").get()
+            val albumsNew = doc.select("div.item")
+            for (child in albumsNew) {
+                val linkTopResult = "https://chiasenhac.vn" + child.select("a").attr("href")
+                val imgTopResult = child.select("div.card-header").attr("style").replace("background-image: url(", "").replace(");", "")
+                val nameTopResult = child.select("a").text()
+                val nameSingerTopResult = child.select("p.card-text").text()
+                listTopResult.add(ItemMusicOnline(imgSong = imgTopResult, nameSong = nameTopResult, singerSong = nameSingerTopResult, linkSong = linkTopResult))
+                result.add(ItemMusicList("Đang Thịnh Hành", listTopResult))
+            }
+        } catch (e: IOException) {
+        }
+        return result
     }
 
 
     override fun addAlbumList(): Any {
         var result = mutableListOf<ItemMusicList<ItemMusicOnline>>()
         var albumsSongYear = albumsSongYear()
-        var albumsVideos = albumsVideos()
         var albumSongNews = albumsSongNews()
-        result.add(ItemMusicList("Albums Mới Nhất 2020", albumsSongYear))
-        result.add(ItemMusicList("Albums Mới", albumSongNews))
-        result.add(ItemMusicList("Video Mới", albumsVideos))
+        result.add(ItemMusicList("Dành Riêng Cho Bạn", albumsSongYear))
+        result.add(ItemMusicList("Albums Hot", albumSongNews))
+
 
         return result
 
@@ -163,7 +177,7 @@ class SongManager : SongService {
                 val imgAlbumsSong = child.select("div.card-header").attr("style").replace("background-image: url(", "").replace(");", "")
                 val nameAlbumsSong = child.select("h3.card-title").select("a").attr("title")
                 val nameAlbumsSingle = child.select("p.card-text").select("a").text()
-                listAlbumsNews.add(ItemMusicOnline(null, null, imgAlbumsSong, nameAlbumsSong, nameAlbumsSingle, linkAlbumsSong, null, null, null))
+                listAlbumsNews.add(ItemMusicOnline(imgSong = imgAlbumsSong, nameSong = nameAlbumsSong, singerSong = nameAlbumsSingle, linkSong = linkAlbumsSong))
             }
         } catch (e: IOException) {
         }
@@ -183,33 +197,37 @@ class SongManager : SongService {
                 val imgAlbumsSong = child.select("div.card-header").attr("style").replace("background-image: url(", "").replace(");", "")
                 val nameAlbumsSong = child.select("h3.card-title").select("a").attr("title")
                 val nameAlbumsSingle = child.select("p.card-text").select("a").text()
-                listAlbumsYear.add(ItemMusicOnline(null, null, imgAlbumsSong, nameAlbumsSong, nameAlbumsSingle, linkAlbumsSong, null, null, null))
+                listAlbumsYear.add(ItemMusicOnline(imgSong = imgAlbumsSong, nameSong = nameAlbumsSong, singerSong = nameAlbumsSingle, linkSong = linkAlbumsSong))
             }
         } catch (e: IOException) {
         }
         return listAlbumsYear
     }
 
-    override fun albumsVideos(): MutableList<ItemMusicOnline> {
+    override fun albumsVideos(): Any {
+        var result = mutableListOf<ItemMusicList<ItemMusicOnline>>()
         val listAlbumsVideos: MutableList<ItemMusicOnline> = ArrayList()
         try {
             val doc: Document = Jsoup.connect("https://chiasenhac.vn/video-moi.html").get()
             val albumsNew = doc.select("div.content-wrap").select("div.col")
             for (child in albumsNew) {
-                val linkAlbumsSong = "https://chiasenhac.vn" + child.select("h3.card-title")
+                val linkAlbumsVideo = child.select("h3.card-title")
                         .select("a").attr("href")
-                val imgAlbumsSong = child.select("div.card-header").attr("style").replace("background-image: url(", "").replace(");", "")
-                val nameAlbumsSong = child.select("h3.card-title").select("a").attr("title")
+                val timeVideo = child.select("span.time").text()
+                val imgAlbumsVideo = child.select("div.card-header").attr("style").replace("background-image: url(", "").replace(");", "")
+                val nameAlbumsVideo = child.select("h3.card-title").select("a").attr("title")
                 val nameAlbumsSingle = child.select("p.card-text").select("a").text()
-                listAlbumsVideos.add(ItemMusicOnline(null, null, imgAlbumsSong, nameAlbumsSong, nameAlbumsSingle, linkAlbumsSong, null, null, null))
+                listAlbumsVideos.add(ItemMusicOnline(imgSong = imgAlbumsVideo, nameSong = nameAlbumsVideo, singerSong = nameAlbumsSingle, linkSong = linkAlbumsVideo, time = timeVideo))
+                result.add(ItemMusicList("Video Hot", listAlbumsVideos))
             }
         } catch (e: IOException) {
         }
-        return listAlbumsVideos
+        return result
     }
 
 
     override fun newSong(): Any {
+        var result = mutableListOf<ItemMusicList<ItemMusicOnline>>()
         val listNewSong: MutableList<ItemMusicOnline> = ArrayList()
         try {
             val doc: Document = Jsoup.connect("https://chiasenhac.vn/bai-hat-moi.html").get()
@@ -222,11 +240,12 @@ class SongManager : SongService {
                 val linkSong = "https://chiasenhac.vn" + child.select("a").attr("href")
                 val hourAgo = (child.select("div.media-right").select("i")[0].parentNode().childNodes()[1] as TextNode).text()
                 var views = child.select("div.media-right").select("small.time_stt")[1].text().replace("headset ", "")
-                listNewSong.add(ItemMusicOnline(null, null, imgSong, nameSong, singerSong, linkSong, qualitySong, hourAgo, views))
+                listNewSong.add(ItemMusicOnline(imgSong = imgSong, nameSong = nameSong, singerSong = singerSong, linkSong = linkSong, quality = qualitySong, hoursAgo = hourAgo, views = views))
+                result.add(ItemMusicList("Bài Hát Mới Nhất", listNewSong))
             }
         } catch (e: IOException) {
         }
-        return listNewSong
+        return result
     }
 
     override fun weeklyRankings(): Any {
@@ -240,7 +259,7 @@ class SongManager : SongService {
                 val imgSong: String = child.select("a").first().select("img").attr("src")
                 val nameSong: String = child.select("a").first().attr("title")
                 val singerSong: String = child.select("div.author").text()
-                listWeekly.add(ItemMusicOnline(null, null, imgSong, nameSong, singerSong, linkSong, null, null, null))
+                listWeekly.add(ItemMusicOnline(imgSong = imgSong, nameSong = nameSong, singerSong = singerSong, linkSong = linkSong))
             }
         } catch (e: IOException) {
         }
@@ -248,70 +267,82 @@ class SongManager : SongService {
     }
 
 
-    override fun getInfo(link: String?):Any?{
+    override fun getInfo(link: String?): Any? {
         ////LOGIN CNS
         loginCNS(link)
 
+
+        var singerSong = ""
+        var authorSong = ""
+        var albumSong = ""
+        var lyricsSong = ""
+        var yearSong = ""
+        var imgSong = ""
+        var category = ""
+        var listenSong = ""
+        var linkMusic = ""
+        var nameSong = ""
+        var lyricKaraoke = ""
         var txtAuthorSong = "Sáng tác"
         var txtYear = "Năm phát hành"
         var txtAlbum = "Album"
+
         var positonSinger: Int
         var positionAlbum: Int
         var positionYear: Int
-        val listInfoSong: MutableList<ItemMusicInfo> = ArrayList()
         try {
             val c: Document = Jsoup.connect(link).get()
             val info: Elements = c.select("div.col-md-4")
-            var lyricKaraoke = doc.select("div.rabbit-lyrics").text()
+            lyricKaraoke = doc.select("div.rabbit-lyrics").text()
 
             var text = c.select("div.col-md-4").select("ul.list-unstyled").text()
             val els: Elements = c.select("div.tab-content").first().select("a.download_item")
-            for (child in info) {
-                val imgSong: String = info.select("img").attr("src")
-                val nameSong: String = info.select("h2.card-title").text()
-                var findTextAuthor = text.contains(txtAuthorSong)
-                var findTextYear = text.contains(txtYear)
-                var findTextAlbum = text.contains(txtAlbum)
-                positionYear = if (findTextYear) {
-                    text.indexOf(txtYear)
-                } else {
-                    text.length
-                }
-                positionAlbum = if (findTextAlbum) {
-                    text.indexOf(txtAlbum)
-                } else {
-                    positionYear
-                }
-                positonSinger = if (findTextAuthor) {
-                    text.indexOf(txtAuthorSong)
-                } else {
-                    positionAlbum
-                }
-
-                var singerSong = text.removeRange(positonSinger, text.length)
-                var authorSong = text.substring(positonSinger, positionAlbum)
-                var albumSong = text.substring(positionAlbum, positionYear)
-                var yearSong = text.substring(positionYear, text.length)
-
-
-                val lyricsSong: String = c.select("div.tab-content.tab-lyric").text()
-                var txtLine = c.select("span.d-flex.listen").text().replace("headset ", "")
-                var findTxt = txtLine.indexOf(" ")
-                var category = c.select("li.breadcrumb-item")[1].text().replace("...", "")
-                var listenSong = txtLine.removeRange(findTxt, txtLine.length)
-                var linkMusic: String? = if (els.size >= 2) {
-                    els[1].attr("href")
-                } else {
-                    els[0].attr("href")
-                }
-                listInfoSong.add(ItemMusicInfo(linkMusic, imgSong, nameSong, singerSong, authorSong, albumSong, yearSong, lyricsSong, lyricKaraoke, listenSong, category))
+            imgSong = info.select("img").attr("src")
+            nameSong = info.select("h2.card-title").text()
+            var findTextAuthor = text.contains(txtAuthorSong)
+            var findTextYear = text.contains(txtYear)
+            var findTextAlbum = text.contains(txtAlbum)
+            positionYear = if (findTextYear) {
+                text.indexOf(txtYear)
+            } else {
+                text.length
             }
+            positionAlbum = if (findTextAlbum) {
+                text.indexOf(txtAlbum)
+            } else {
+                positionYear
+            }
+            positonSinger = if (findTextAuthor) {
+                text.indexOf(txtAuthorSong)
+            } else {
+                positionAlbum
+            }
+
+            singerSong = text.removeRange(positonSinger, text.length)
+            authorSong = text.substring(positonSinger, positionAlbum)
+            albumSong = text.substring(positionAlbum, positionYear)
+            yearSong = text.substring(positionYear, text.length)
+
+
+            lyricsSong = c.select("div.tab-content.tab-lyric").select("div[id]")[2].toString().replace("<br>", "").replace("<div id=\"fulllyric\">", "").replace("</div>", "")
+            var txtLine = c.select("span.d-flex.listen").text().replace("headset ", "")
+            var findTxt = txtLine.indexOf(" ")
+            category = "Thể loại: " + c.select("li.breadcrumb-item")[1].text().replace("...", "")
+
+            listenSong = txtLine.removeRange(findTxt, txtLine.length)
+            linkMusic = if (els.size >= 2) {
+                els[1].attr("href")
+            } else {
+                els[0].attr("href")
+            }
+
+
         } catch (e: IOException) {
             e.printStackTrace()
         } catch (e: NullPointerException) {
             e.printStackTrace()
         }
-        return listInfoSong
+        return ItemInfo(linkMusic, imgSong, nameSong, singerSong, authorSong, albumSong, yearSong, lyricsSong, lyricKaraoke, listenSong, category)
     }
 
 
@@ -330,22 +361,19 @@ class SongManager : SongService {
                 val imgSongChild: String = doc.select("div.row").select("img").attr("src")
                 val nameSongChil: String = child.select("a").first().attr("title")
                 val singerSongChild: String = child.select("div.author-ellepsis").text()
-                listAlbumsChil.add(ItemMusicOnline(id, null, imgSongChild, nameSongChil, singerSongChild, linkSongChild, null, null, null))
+                listAlbumsChil.add(ItemMusicOnline(id = id, imgSong = imgSongChild, nameSong = nameSongChil, singerSong = singerSongChild, linkSong = linkSongChild))
             }
         } catch (e: IOException) {
         }
         return listAlbumsChil
     }
 
-    override fun getRelate(linkSongAlbums: String): Any {
+    override fun getRelateSong(linkSongAlbums: String): Any {
         var result = mutableListOf<ItemMusicList<ItemMusicOnline>>()
         var mvSong = getMVSong(linkSongAlbums)
         var songSinger = getSongSinger(linkSongAlbums)
-        var videoSinger = getVideoSinger(linkSongAlbums)
-        result.add(ItemMusicList("MV Bài Hát", mvSong))
+        result.add(ItemMusicList("", mvSong))
         result.add(ItemMusicList("Bài Hát Cùng Ca Sĩ", songSinger))
-        result.add(ItemMusicList("Video Cùng Ca Sĩ", videoSinger))
-
         return result
 
     }
@@ -359,7 +387,7 @@ class SongManager : SongService {
             var nameVideos = doc.select("ul.list-unstyled.mv_sing").select("h5.mt-0").text()
             var singerVideos = doc.select("ul.list-unstyled.mv_sing").select("div.author").text()
 
-            listMVSong.add(ItemMusicOnline(null, null, imgVideos, nameVideos, singerVideos, linkVideos, null, null, null))
+            listMVSong.add(ItemMusicOnline(imgSong = imgVideos, nameSong = nameVideos, singerSong = singerVideos, linkSong = linkVideos))
         } catch (e: IOException) {
         }
         return listMVSong
@@ -376,25 +404,25 @@ class SongManager : SongService {
                 val imgSongSinger = songSinger.select("div.card-header").eq(i).attr("style").replace("background-image: url(", "").replace(");", "")
                 val nameSongSinger = songSinger.select("h3.card-title").eq(i).select("a").attr("title")
                 val singerSongSinger = songSinger.select("p.card-text").eq(i).select("a").text()
-                listSongSinger.add(ItemMusicOnline(null, null, imgSongSinger, nameSongSinger, singerSongSinger, linkSongSinger, null, null, null))
+                listSongSinger.add(ItemMusicOnline(imgSong = imgSongSinger, nameSong = nameSongSinger, singerSong = singerSongSinger, linkSong = linkSongSinger))
             }
         } catch (e: IOException) {
         }
         return listSongSinger
     }
 
-    override fun getVideoSinger(linkSongAlbums: String): MutableList<ItemMusicOnline> {
+    override fun getRelateVideo(linkSongAlbums: String): Any {
         val listVideoSinger: MutableList<ItemMusicOnline> = ArrayList()
         try {
             val doc: Document = Jsoup.connect(linkSongAlbums).get()
             val songSinger = doc.select("div.row.row10px.float-col-width").select("div.col")
             for (i in 5..9) {
-                val linkVideoSinger = "https://chiasenhac.vn" + songSinger.select("h3.card-title")
+                val linkVideoSinger = songSinger.select("h3.card-title").eq(i)
                         .select("a").attr("href")
                 val imgVideosSinger = songSinger.select("div.card-header").eq(i).attr("style").replace("background-image: url(", "").replace(");", "")
                 val nameVideoSinger = songSinger.select("h3.card-title").eq(i).select("a").attr("title")
                 val singerVideoSinger = songSinger.select("p.card-text").eq(i).select("a").text()
-                listVideoSinger.add(ItemMusicOnline(null, null, imgVideosSinger, nameVideoSinger, singerVideoSinger, linkVideoSinger, null, null, null))
+                listVideoSinger.add(ItemMusicOnline(imgSong = imgVideosSinger, nameSong = nameVideoSinger, singerSong = singerVideoSinger, linkSong = linkVideoSinger))
             }
         } catch (e: IOException) {
         }
@@ -417,7 +445,7 @@ class SongManager : SongService {
                     val singerSong: String = child.select("div.author").text()
                     val qualitySong = child.select("small.type_music").text()
                     var views = child.select("div.media-right").select("small.time_stt").text().replace("play_arrow ", "")
-                    listSuggestion.add(ItemMusicOnline(null, null, imgSong, nameSong, singerSong, linkSong, qualitySong, null, views))
+                    listSuggestion.add(ItemMusicOnline(imgSong = imgSong, nameSong = nameSong, singerSong = singerSong, linkSong = linkSong, quality = qualitySong, views = views))
 
                 }
             }
@@ -453,7 +481,7 @@ class SongManager : SongService {
                     val nameSong: String = child.select("a").first().attr("title")
                     val singerSong: String = child.select("div.author").text()
                     var views = child.select("div.media-right").select("small.time_stt").text().replace("play_arrow ", "")
-                    listRankMusicContry.add(ItemMusicOnline(null, null, imgSong, nameSong, singerSong, linkSong, null, null, views))
+                    listRankMusicContry.add(ItemMusicOnline(imgSong = imgSong, nameSong = nameSong, singerSong = singerSong, linkSong = linkSong, views = views))
                 }
             }
         } catch (e: NullPointerException) {
@@ -485,13 +513,105 @@ class SongManager : SongService {
                     val nameVideo = child.select("a").first().attr("title")
                     val singerVideo = child.select("div.author").text()
                     var views = child.select("div.media-right").select("small.time_stt").text().replace("play_arrow ", "")
-                    listRankVideoContry.add(ItemMusicOnline(null, null, imgVideo, nameVideo, singerVideo, linkVideo, null, null, views))
+                    listRankVideoContry.add(ItemMusicOnline(imgSong = imgVideo, nameSong = nameVideo, singerSong = singerVideo, linkSong = linkVideo, views = views))
                 }
             }
         } catch (e: NullPointerException) {
             e.printStackTrace()
         }
         return listRankVideoContry
+    }
+
+    override fun outstandingSinger(): Any {
+        var result = mutableListOf<ItemMusicList<ItemCategories>>()
+        val listoutstandingSinger: MutableList<ItemCategories> = ArrayList()
+        try {
+            val doc: Document = Jsoup.connect("https://chiasenhac.vn").get()
+            val albumsNew = doc.select("div.singer_grid").select("a")
+            for (child in albumsNew) {
+                val linkSinger = "https://chiasenhac.vn" + child.select("a").attr("href")
+                val imgSinger = child.select("a").attr("style").replace("background-image: url(", "").replace(");", "")
+                val nameSinger = child.text()
+                listoutstandingSinger.add(ItemCategories(linkSinger, imgSinger, nameSinger))
+                result.add(ItemMusicList("Ca Sĩ Nổi Bật", listoutstandingSinger))
+
+            }
+        } catch (e: IOException) {
+        }
+        return result
+    }
+
+
+    override fun searchAlbum(nameSong: String?): Any {
+        val listSearchAlbum: MutableList<ItemMusicOnline> = ArrayList()
+        try {
+            val c: Document = Jsoup.connect(("https://chiasenhac.vn/tim-kiem?q="
+                    + nameSong?.replace(" ", "+")) +
+                    "&page_album=" + 1.toString() + "&filter=all").get()
+            val els: Elements = c.select("div.row.row10px.float-col-width").first().select("div.col")
+            for (child in els) {
+                try {
+                    val linkSong: String = "https://chiasenhac.vn" + child.select("a").first().attr("href")
+                    val imgSong: String = child.select("div.card-header").attr("style").replace("background-image: url(", "").replace(");", "")
+                    val nameSong: String = child.select("a").first().attr("title")
+                    val singerSong: String = child.select("p.card-text").text()
+                    listSearchAlbum.add(ItemMusicOnline(imgSong = imgSong, nameSong = nameSong, singerSong = singerSong, linkSong = linkSong))
+                } catch (e1: Exception) {
+                    e1.printStackTrace()
+                }
+            }
+
+        } catch (e: IOException) {
+            e.printStackTrace()
+        } catch (e: NullPointerException) {
+            e.printStackTrace()
+        }
+        return listSearchAlbum
+    }
+
+    override fun searchVideo(nameSong: String?): Any {
+        val listSearchVideo: MutableList<ItemMusicOnline> = ArrayList()
+        try {
+            val c: Document = Jsoup.connect(("https://chiasenhac.vn/tim-kiem?q="
+                    + nameSong?.replace(" ", "+")) +
+                    "&page_video=" + 1.toString() + "#").get()
+            val els: Elements = c.select("div.row.row10px.float-col-width-video").first().select("div.col")
+            for (child in els) {
+                try {
+                    val linkSong: String = child.select("a").first().attr("href")
+                    val imgSong: String = child.select("div.card-header").attr("style").replace("background-image: url(", "").replace(");", "")
+                    val nameSong: String = child.select("a").first().attr("title")
+                    val time: String = child.select("p.time").text()
+                    val singerSong: String = child.select("p.card-text")[1].text()
+                    listSearchVideo.add(ItemMusicOnline(imgSong = imgSong, nameSong = nameSong, singerSong = singerSong, linkSong = linkSong, time = time))
+                } catch (e: Exception) {
+                    e.printStackTrace()
+                }
+            }
+
+        } catch (e: IOException) {
+            e.printStackTrace()
+        } catch (e: NullPointerException) {
+            e.printStackTrace()
+        }
+        return listSearchVideo
+    }
+
+    override fun mostSearched(): Any {
+        val listMostSearched: MutableList<ItemMusicOnline> = ArrayList()
+        try {
+            val doc: Document = Jsoup.connect("https://chiasenhac.vn").get()
+            val albumsNew = doc.select("a.search-line.parent-line.search-line-music")
+            for (child in albumsNew) {
+                val linkSong = child.select("a").attr("href")
+                val nameSong = child.select("h5").attr("title")
+                val nameSinger = child.select("div.author").text()
+                listMostSearched.add(ItemMusicOnline(linkSong = linkSong, nameSong = nameSong, singerSong = nameSinger))
+
+            }
+        } catch (e: IOException) {
+        }
+        return listMostSearched
     }
 
 }

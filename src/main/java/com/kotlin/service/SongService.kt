@@ -6,10 +6,13 @@ import com.kotlin.model.ItemMusicOnline
 interface SongService {
     fun searchSong(nameSong: String): Any
 
-    fun addCategories(): Any
-    fun categoriesContry(): Any
+
+    //
+    fun categoriesCountry(): Any
     fun categoriesStatus(): Any
 
+    //
+    fun getTopResults():Any
 
     fun addAlbumList(): Any
     fun albumsSongNews(): Any
@@ -18,10 +21,10 @@ interface SongService {
 
     //get AlbumsChil
     fun getAlbumsChil(linkAlbums: String): Any
-    fun getRelate(linkSongAlbums: String): Any
+    fun getRelateSong(linkSongAlbums: String): Any
     fun getMVSong(linkSongAlbums: String): Any
     fun getSongSinger(linkSongAlbums: String): Any
-    fun getVideoSinger(linkSongAlbums: String): Any
+    fun getRelateVideo(linkSongAlbums: String): Any
     fun getSuggestions(linkSongAlbums: String): Any
 
     fun newSong(): Any
@@ -29,4 +32,12 @@ interface SongService {
     fun getInfo(linkSong: String?): Any?
     fun rankMusicCountry(country: String): Any
     fun rankVideoCountry(country: String): Any
+
+    //
+    fun outstandingSinger(): Any
+
+    //
+    fun searchAlbum(nameSong: String?): Any
+    fun searchVideo(nameSong: String?): Any
+    fun mostSearched():Any
 }
