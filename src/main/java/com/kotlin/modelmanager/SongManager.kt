@@ -346,7 +346,8 @@ class SongManager : SongService {
             } else {
                 els[0].attr("href").substring(0, linkMusic.length-5)
             }
-            b = a.replace(".mp3", ".png")
+            b = a.replace(".mp3", ".png").replace("%", "+++")
+
 
 
         } catch (e: IOException) {
