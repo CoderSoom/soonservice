@@ -297,8 +297,6 @@ class SongManager : SongService {
 
         var positonSinger: Int
         var positionAlbum: Int
-        var a =""
-        var b=""
         var positionYear: Int
         try {
             val c: Document = Jsoup.connect(link).get()
@@ -341,12 +339,11 @@ class SongManager : SongService {
 
             listenSong = txtLine.removeRange(findTxt, txtLine.length)
 
-            a = if (els.size >= 2) {
+            linkMusic = if (els.size >= 2) {
                 els[1].attr("href")
             } else {
                 els[0].attr("href").substring(0, linkMusic.length-5)
             }
-            b = a.replace(".mp3", ".png").replace("%", "+++")
 
 
 
@@ -355,7 +352,7 @@ class SongManager : SongService {
         } catch (e: NullPointerException) {
             e.printStackTrace()
         }
-        return ItemInfo(b, imgSong, nameSong, singerSong, authorSong, albumSong, yearSong, lyricsSong, lyricKaraoke, listenSong, category)
+        return ItemInfo(linkMusic, imgSong, nameSong, singerSong, authorSong, albumSong, yearSong, lyricsSong, lyricKaraoke, listenSong, category)
     }
 
 
