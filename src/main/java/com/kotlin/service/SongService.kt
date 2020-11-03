@@ -27,6 +27,13 @@ interface SongService {
     fun getRelateVideo(linkSongAlbums: String): Any
     fun getSuggestions(linkSongAlbums: String): Any
 
+    //
+    fun getAlbumChilSinger(linkSinger: String): Any
+    //
+    fun readSoomNew(): Any
+
+
+
     fun newSong(): Any
     fun weeklyRankings(): Any
     fun getInfo(linkSong: String?): Any?

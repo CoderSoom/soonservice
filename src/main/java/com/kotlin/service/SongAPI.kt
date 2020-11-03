@@ -50,6 +50,11 @@ class SongAPI {
         return service.getAlbumsChil(linkAlbums)
     }
 
+    @GetMapping("/api/AlbumsChilSinger")
+    fun getAlbumsChilSinger(@RequestParam("linkSinger") linkSinger: String): Any {
+        return service.getAlbumChilSinger(linkSinger)
+    }
+
     @GetMapping("/api/newSongs")
     fun newSongs(): Any {
         return service.newSong()
@@ -135,5 +140,12 @@ class SongAPI {
     @GetMapping("/api/mostSearched")
     fun mostSearch(): Any {
         return service.mostSearched()
+    }
+    /****************************************
+     *   READ
+     ****************************************/
+    @GetMapping("/api/readSoomNew")
+    fun newspapers(): Any {
+        return service.readSoomNew()
     }
 }
