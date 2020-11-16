@@ -367,7 +367,8 @@ class SongManager : SongService {
 //            } else {
 //                els[0].attr("href").substring(0, linkMusic.length - 5)
 //            }
-            linkMusic =els.html()
+            var a = doc.select("ul.list-unstyled.download_status").html()
+            linkMusic =a
 
 
         } catch (e: IOException) {
