@@ -12,11 +12,6 @@ class SongAPI {
     private lateinit var service: SongService
 
 
-
-
-
-
-
     /****************************************
      *    GET INFO SONG, VIDEOS, ALBUMS
      ****************************************/
@@ -30,7 +25,7 @@ class SongAPI {
      ****************************************/
 
     @GetMapping("/api/topResult")
-    fun topResult(): Any?{
+    fun topResult(): Any? {
         return service.getTopResults()
     }
 
@@ -41,10 +36,12 @@ class SongAPI {
     fun newAlbumsSong(): Any {
         return service.addAlbumList()
     }
+
     @GetMapping("/api/newAlbumsVideo")
-    fun newAlbumsVideo(): Any{
+    fun newAlbumsVideo(): Any {
         return service.albumsVideos()
     }
+
     @GetMapping("/api/AlbumsChil")
     fun getAlbumsChil(@RequestParam("linkAlbums") linkAlbums: String): Any {
         return service.getAlbumsChil(linkAlbums)
@@ -60,15 +57,24 @@ class SongAPI {
         return service.newSong()
     }
 
+
+
+    ///RelateSong
+
     @GetMapping("/api/getRelateSongs")
-    fun getRelate(@RequestParam("linkRelate") linkRelate: String): Any {
-        return service.getRelateSong(linkRelate)
-    }
-    @GetMapping("/api/getRelateVideos")
-    fun getRelateVideo(@RequestParam("linkRelate") linkRelate: String): Any{
-        return service.getRelateVideo(linkRelate)
+    fun getRelate(@RequestParam("linkSong") linkSong: String): Any {
+        return service.getSongSinger(linkSong)
     }
 
+    @GetMapping("/api/getMVSongs")
+    fun getMVSong(@RequestParam("linkSong") linkSong: String): Any {
+        return service.getMVSong(linkSong)
+    }
+
+    @GetMapping("/api/getRelateVideos")
+    fun getRelateVideo(@RequestParam("linkRelate") linkRelate: String): Any {
+        return service.getRelateVideo(linkRelate)
+    }
 
 
     /****************************************
@@ -78,7 +84,6 @@ class SongAPI {
     fun getSuggestions(@RequestParam("linkAlbumsSong") linkRelate: String): Any {
         return service.getSuggestions(linkRelate)
     }
-
 
 
     /****************************************
@@ -99,6 +104,7 @@ class SongAPI {
     fun rankVideoCountry(@RequestParam("country") country: String): Any {
         return service.rankVideoCountry(country)
     }
+
     /****************************************
      *    GET CATEGORIES
      ****************************************/
@@ -114,6 +120,12 @@ class SongAPI {
         return service.categoriesStatus()
     }
 
+    @GetMapping("/api/themesStatus")
+    fun chilCategoriesStatus(@RequestParam("status") status: String): Any {
+        return service.chilCategoriesStatus(status)
+    }
+
+
     /****************************************
      *    OUTSTANDING SINGER
      ****************************************/
@@ -122,6 +134,7 @@ class SongAPI {
     fun outstandingSinger(): Any {
         return service.outstandingSinger()
     }
+
     /****************************************
      *    SEARCH
      ****************************************/
@@ -129,18 +142,22 @@ class SongAPI {
     fun searchAlbum(@RequestParam("nameSearch") nameSearch: String?): Any {
         return service.searchAlbum(nameSearch)
     }
+
     @GetMapping("/api/searchVideos")
     fun searchVideo(@RequestParam("nameSearch") nameSearch: String?): Any {
         return service.searchVideo(nameSearch)
     }
+
     @GetMapping("/api/searchSong")
     fun searchSong(@RequestParam("nameSearch") namesSong: String): Any {
         return service.searchSong(namesSong)
     }
+
     @GetMapping("/api/mostSearched")
     fun mostSearch(): Any {
         return service.mostSearched()
     }
+
     /****************************************
      *   READ
      ****************************************/

@@ -1,7 +1,5 @@
 package com.kotlin.service
 
-import com.kotlin.model.ItemMusicOnline
-
 
 interface SongService {
     fun searchSong(nameSong: String): Any
@@ -10,6 +8,7 @@ interface SongService {
     //
     fun categoriesCountry(): Any
     fun categoriesStatus(): Any
+    fun chilCategoriesStatus(status: String): Any
 
     //
     fun getTopResults():Any
@@ -21,7 +20,6 @@ interface SongService {
 
     //get AlbumsChil
     fun getAlbumsChil(linkAlbums: String): Any
-    fun getRelateSong(linkSongAlbums: String): Any
     fun getMVSong(linkSongAlbums: String): Any
     fun getSongSinger(linkSongAlbums: String): Any
     fun getRelateVideo(linkSongAlbums: String): Any
