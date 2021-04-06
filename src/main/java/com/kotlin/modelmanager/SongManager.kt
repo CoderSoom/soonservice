@@ -362,13 +362,11 @@ class SongManager : SongService {
 
             listenSong = txtLine.removeRange(findTxt, txtLine.length)
 
-//            linkMusic = if (els.size >= 2) {
-//                els[1].attr("href")
-//            } else {
-//                els[0].attr("href").substring(0, linkMusic.length - 5)
-//            }
-            var a = doc.select("ul.list-unstyled.download_status").html()
-            linkMusic =a
+            linkMusic = if (els.size >= 2) {
+                els[1].attr("href")
+            } else {
+                els[0].attr("href").substring(0, linkMusic.length - 5)
+            }
 //
 
 
